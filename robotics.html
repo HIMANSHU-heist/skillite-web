@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotics Engineering Roadmap – SKILLITE</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    /* Root variables for consistent colors and shadows */
+    :root {
+        --dark-blue-bg: #0a101d;
+        --mid-blue-bg: #141f33;
+        --neon-blue: #007bff;
+        --light-neon-blue: #37a8ff;
+        --neon-orange: #ffa500;
+        --dark-orange: #ff8c00;
+        --text-light: #e0f2f7;
+        --text-muted: #99aab5;
+        --shadow-blue: rgba(0, 123, 255, 0.6);
+        --shadow-orange: rgba(255, 140, 0, 0.6);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, var(--dark-blue-bg), var(--mid-blue-bg), var(--dark-blue-bg));
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column; /* Stack navbar, sidebar, and main content */
+        align-items: center; /* Center content horizontally */
+        min-height: 100vh;
+        text-align: center; /* Default text alignment for body */
+        overflow-x: hidden;
+        padding-top: 80px; /* Space for fixed navbar */
+        box-sizing: border-box;
+    }
+
+    /* --- Navbar Styling --- */
+    .navbar {
+        width: 100%;
+        background-color: rgba(10, 16, 29, 0.9);
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-sizing: border-box;
+    }
+
+    .navbar-brand {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8em;
+        color: var(--neon-blue);
+        text-shadow: 0 0 5px var(--neon-blue);
+        text-align: left;
+        white-space: nowrap;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowBlueText 2s ease-in-out infinite alternate;
+        margin-right: 20px;
+        flex-grow: 1;
+    }
+
+    .navbar-brand span {
+        font-size: 0.6em;
+        display: block;
+        font-weight: 400;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, var(--neon-orange), var(--dark-orange), var(--neon-orange));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowOrangeText 2s ease-in-out infinite alternate;
+        margin-top: 5px;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+    .navbar-buttons .btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    /* Hamburger Menu Icon */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        cursor: pointer;
+        z-index: 1001;
+        margin-right: 20px;
+    }
+
+    .hamburger .line {
+        width: 100%;
+        height: 3px;
+        background-color: var(--neon-blue);
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 5px var(--neon-blue);
+    }
+
+    .hamburger.open .line:nth-child(1) {
+        transform: translateY(11px) rotate(45deg);
+    }
+    .hamburger.open .line:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.open .line:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg);
+    }
+
+    /* --- Sidebar Styling --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px; /* Hidden by default */
+        width: 280px;
+        height: 100%;
+        background-color: rgba(10, 16, 29, 0.95);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7);
+        transition: left 0.4s ease-in-out;
+        z-index: 999;
+        padding-top: 80px;
+        overflow-y: auto;
+        border-right: 1px solid rgba(0, 123, 255, 0.3);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar ul li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar ul li a {
+        display: block;
+        padding: 15px 25px;
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+        text-align: left;
+        border-left: 5px solid transparent;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li.active > a {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--neon-blue);
+        text-shadow: 0 0 8px var(--neon-blue);
+        border-left-color: var(--neon-blue);
+    }
+
+    /* Styles for signup/login buttons inside sidebar */
+    .sidebar .sidebar-auth-buttons {
+        display: none; /* Hidden by default for desktop, shown on mobile */
+        padding: 20px 25px;
+        gap: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .sidebar .sidebar-auth-buttons .btn {
+        width: calc(50% - 10px);
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+
+    .sidebar ul li .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .sidebar ul li .sub-menu.open {
+        max-height: 500px;
+    }
+
+    .sidebar ul li .sub-menu li a {
+        padding: 10px 25px 10px 45px;
+        font-size: 0.95em;
+        color: var(--text-muted);
+    }
+
+    .sidebar ul li .sub-menu li a:hover {
+        background-color: rgba(255, 165, 0, 0.1);
+        color: var(--neon-orange);
+        text-shadow: 0 0 5px var(--neon-orange);
+        border-left-color: var(--neon-orange);
+    }
+
+    /* --- Page Content Specific Styling --- */
+    main {
+        flex-grow: 1; /* Allow main content to take remaining vertical space */
+        width: 100%;
+        padding: 40px 20px; /* Adjust padding for main content */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3.5em;
+        margin-bottom: 30px;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(55, 168, 255, 0.5),
+            0 0 30px rgba(55, 168, 255, 0.3);
+        animation: neonGlowBlue 1.5s ease-in-out infinite alternate;
+        letter-spacing: 2px;
+        text-align: center;
+    }
+
+    /* Buttons at the top right */
+    .top-right-buttons {
+        position: absolute;
+        top: 95px; /* Below navbar */
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 990; /* Below navbar, above content */
+    }
+
+    /* General button style */
+    .btn {
+        display: inline-block;
+        padding: 15px 35px;
+        font-size: 1.1em;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        box-sizing: border-box; /* Include padding in width */
+    }
+
+    .btn.primary-blue { /* Style for primary action buttons */
+        background: linear-gradient(45deg, var(--neon-blue), var(--light-neon-blue));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(0, 123, 255, 0.4),
+            0 0 30px rgba(0, 123, 255, 0.2);
+        border-color: var(--neon-blue);
+    }
+
+    .btn.primary-orange { /* Style for secondary action buttons */
+        background: linear-gradient(45deg, var(--dark-orange), var(--neon-orange));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-orange),
+            0 0 20px rgba(255, 140, 0, 0.4),
+            0 0 30px rgba(255, 140, 0, 0.2);
+        border-color: var(--dark-orange);
+    }
+
+    .btn.primary-blue:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-blue),
+            0 0 30px rgba(0, 123, 255, 0.6),
+            0 0 45px rgba(0, 123, 255, 0.4);
+        background: linear-gradient(45deg, var(--light-neon-blue), var(--neon-blue));
+        border-color: var(--light-neon-blue);
+    }
+
+    .btn.primary-orange:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-orange),
+            0 0 30px rgba(255, 140, 0, 0.6),
+            0 0 45px rgba(255, 140, 0, 0.4);
+        background: linear-gradient(45deg, var(--neon-orange), var(--dark-orange));
+        border-color: var(--neon-orange);
+    }
+
+    /* Roadmap Content Styling */
+    .roadmap-container {
+        max-width: 900px;
+        width: 100%;
+        margin-top: 40px;
+        opacity: 0; /* Hidden by default */
+        transition: opacity 1s ease-in-out;
+        text-align: left; /* Align text within roadmap sections */
+    }
+
+    .roadmap-container.visible {
+        opacity: 1;
+    }
+
+    .roadmap-section {
+        background-color: rgba(10, 16, 29, 0.7);
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+        border: 1px solid rgba(0, 123, 255, 0.1);
+        backdrop-filter: blur(5px);
+    }
+
+    .roadmap-section h2 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2em;
+        color: var(--neon-blue);
+        text-shadow: 0 0 8px var(--neon-blue);
+        margin-bottom: 25px;
+        border-bottom: 2px solid rgba(0, 123, 255, 0.3);
+        padding-bottom: 15px;
+    }
+
+    .roadmap-step h3 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.5em;
+        color: var(--neon-orange);
+        text-shadow: 0 0 5px var(--neon-orange);
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+
+    .roadmap-section ul {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+    }
+
+    .roadmap-section ul li {
+        margin-bottom: 10px;
+        font-size: 1.05em;
+        line-height: 1.6;
+        color: var(--text-light);
+        text-shadow: 0 0 2px rgba(224, 242, 247, 0.3);
+    }
+
+    .roadmap-section ul li strong {
+        color: var(--light-neon-blue);
+    }
+
+    .roadmap-section p {
+        font-size: 1.05em;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        color: var(--text-light);
+        text-shadow: 0 0 2px rgba(224, 242, 247, 0.3);
+    }
+
+    .roadmap-section .highlight-text {
+        color: var(--neon-orange);
+        font-weight: 600;
+        text-shadow: 0 0 5px var(--neon-orange);
+    }
+
+    /* Animation Keyframes */
+    @keyframes neonGlowBlue {
+        from {
+            text-shadow:
+                0 0 10px var(--shadow-blue),
+                0 0 20px rgba(55, 168, 255, 0.5),
+                0 0 30px rgba(55, 168, 255, 0.3);
+        }
+        to {
+            text-shadow:
+                0 0 15px rgba(0, 123, 255, 0.9),
+                0 0 25px rgba(0, 123, 255, 0.7),
+                0 0 40px rgba(0, 123, 255, 0.5);
+        }
+    }
+    @keyframes neonGlowOrange {
+        from {
+            text-shadow:
+                0 0 8px rgba(255, 215, 0, 0.6),
+                0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        to {
+            text-shadow:
+                0 0 12px rgba(255, 215, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.6);
+        }
+    }
+    @keyframes neonGlowBlueText {
+        0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--light-neon-blue); }
+        100% { text-shadow: 0 0 8px var(--neon-blue), 0 0 15px var(--light-neon-blue), 0 0 20px rgba(55, 168, 255, 0.3); }
+    }
+    @keyframes neonGlowOrangeText {
+        0% { text-shadow: 0 0 3px var(--neon-orange), 0 0 6px var(--dark-orange); }
+        100% { text-shadow: 0 0 5px var(--neon-orange), 0 0 10px var(--dark-orange), 0 0 15px rgba(255, 165, 0, 0.3); }
+    }
+
+    /* Media Queries */
+    @media (max-width: 900px) {
+        .navbar {
+            padding: 15px 20px;
+        }
+        .navbar-brand {
+            font-size: 1.5em;
+            text-align: center;
+            flex-grow: 1;
+            margin-right: 0;
+        }
+        .navbar-brand span {
+            display: none;
+        }
+        .navbar-buttons {
+            display: none;
+        }
+        .hamburger {
+            margin-right: 0;
+        }
+        .sidebar .sidebar-auth-buttons {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 2.5em;
+        }
+        .top-right-buttons {
+            position: static; /* Remove fixed positioning */
+            margin-top: 20px; /* Add space below h1 */
+            margin-bottom: 20px; /* Add space above roadmap content */
+            flex-direction: row; /* Arrange buttons in a row */
+            justify-content: center; /* Center buttons */
+            width: 100%;
+            gap: 15px;
+        }
+        .top-right-buttons .btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            flex-grow: 1; /* Allow buttons to grow */
+            max-width: 200px; /* Limit width */
+        }
+        .roadmap-container {
+            padding: 0 15px;
+        }
+        .roadmap-section {
+            padding: 25px;
+        }
+        .roadmap-section h2 {
+            font-size: 1.8em;
+        }
+        .roadmap-step h3 {
+            font-size: 1.3em;
+        }
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 2em;
+        }
+        .top-right-buttons {
+            flex-direction: column; /* Stack buttons vertically */
+            gap: 10px;
+        }
+        .top-right-buttons .btn {
+            width: 90%; /* Almost full width */
+            max-width: 300px; /* Max width for stacked buttons */
+        }
+        .roadmap-section {
+            padding: 20px;
+        }
+        .roadmap-section h2 {
+            font-size: 1.5em;
+        }
+        .roadmap-step h3 {
+            font-size: 1.1em;
+        }
+        .roadmap-section ul li,
+        .roadmap-section p {
+            font-size: 0.95em;
+        }
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const hasSubmenus = document.querySelectorAll('.has-submenu > a');
+    const viewRoadmapBtn = document.getElementById('viewRoadmapBtn');
+    const roadmapContainer = document.getElementById('roadmapContainer');
+
+    // Sidebar toggle logic
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+        hamburger.classList.toggle('open');
+    });
+
+    // Submenu toggle logic
+    hasSubmenus.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subMenu = this.nextElementSibling;
+            if (subMenu && subMenu.classList.contains('sub-menu')) {
+                subMenu.classList.toggle('open');
+                this.parentElement.classList.toggle('active');
+            }
+        });
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnHamburger = hamburger.contains(event.target);
+        const isClickOnNavbarButton = event.target.closest('.navbar-buttons');
+
+        if (sidebar.classList.contains('open') && !isClickInsideSidebar && !isClickOnHamburger && !isClickOnNavbarButton) {
+            sidebar.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+            document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+        }
+    });
+
+    // Close sidebar on any link click inside sidebar (if not a submenu toggle)
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!this.parentElement.classList.contains('has-submenu') && !this.closest('.sidebar-auth-buttons')) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('open');
+                document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+                document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+            }
+        });
+    });
+
+    // View Roadmap button functionality
+    viewRoadmapBtn.addEventListener('click', function() {
+        roadmapContainer.classList.toggle('visible');
+        // Optional: Scroll to the roadmap section after it appears
+        if (roadmapContainer.classList.contains('visible')) {
+            roadmapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+// Function to navigate back to home
+function goToHome() {
+    window.location.href = "index.html";
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="hamburger" id="hamburger">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    <div class="navbar-brand">
+        SKILLITE
+        <span>LEARN SKILLS, BECOME ELITE</span>
+    </div>
+    <div class="navbar-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-auth-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+    <ul>
+        <li><a href="index.html">🏠 Home</a>
+            <ul class="sub-menu">
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Latest Posts</a></li>
+                <li><a href="#">Notifications</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">👤 Your Profile</a>
+            <ul class="sub-menu">
+                <li><a href="#">Name</a></li>
+                <li><a href="#">College</a></li>
+                <li><a href="#">Branch</a></li>
+                <li><a href="#">Interests</a></li>
+                <li><a href="#">Skill Levels</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧑‍🏫 Your Mentor</a>
+            <ul class="sub-menu">
+                <li><a href="#">Assigned Mentor Info</a></li>
+                <li><a href="#">Chat / Message</a></li>
+                <li><a href="#">Change Request</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📊 Roadmap / Progress</a>
+            <ul class="sub-menu">
+                <li><a href="#">Personalized Roadmap</a></li>
+                <li><a href="#">Completed Steps</a></li>
+                <li><a href="#">Upcoming Milestones</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎯 Your Skills</a>
+            <ul class="sub-menu">
+                <li><a href="#">Added Skills</a></li>
+                <li><a href="#">Suggested Skills</a></li>
+                <li><a href="#">Certificates</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📚 Learning Hub</a>
+            <ul class="sub-menu">
+                <li><a href="#">Tutorials</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Masterclasses</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧰 Tools & Resources</a>
+            <ul class="sub-menu">
+                <li><a href="#">Resume Builder</a></li>
+                <li><a href="#">Interview Tips</a></li>
+                <li><a href="#">Aptitude Quizzes</a></li>
+                <li><a href="#">Coding Playground</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🗺 Explore Fields</a>
+            <ul class="sub-menu">
+                <li><a href="#">Branch-wise Fields</a></li>
+                <li><a href="#">Emerging Technologies</a></li>
+                <li><a href="#">Market Trends</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💼 Job Opportunities</a>
+            <ul class="sub-menu">
+                <li><a href="#">Internships</a></li>
+                <li><a href="#">Fresher Jobs</a></li>
+                <li><a href="#">Top Companies</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎓 GATE & Higher Studies</a>
+            <ul class="sub-menu">
+                <li><a href="#">Exam Guides</a></li>
+                <li><a href="#">Updates & Notifications</a></li>
+                <li><a href="#">Application Reminders</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📅 Events & Webinars</a>
+            <ul class="sub-menu">
+                <li><a href="#">Upcoming Events</a></li>
+                <li><a href="#">Past Recordings</a></li>
+                <li><a href="#">Register</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💬 Feedback / Suggest Topics</a>
+            <ul class="sub-menu">
+                <li><a href="#">Feedback Form</a></li>
+                <li><a href="#">Quick DM</a></li>
+            </ul>
+        </li>
+        <li><a href="#">🔒 Log Out</a></li>
+    </ul>
+</div>
+
+<main>
+    <h1>Robotics Engineering Roadmap</h1>
+
+    <div class="top-right-buttons">
+        <button id="viewRoadmapBtn" class="btn primary-orange">View Roadmap</button>
+    </div>
+
+    <div id="roadmapContainer" class="roadmap-container">
+        <div class="roadmap-section">
+            <h2>✅ Step 1: Roadmap – Robotics Engineering (Hybrid field: Mechanical + Electronics + IT)</h2>
+            <div class="roadmap-step">
+                <h3>🎓 Layer 1 – Entry & Foundation:</h3>
+                <ul>
+                    [cite_start]<li><strong>Degree:</strong> B.Tech/B.E in Mechatronics / Robotics / Mechanical / Electronics [cite: 3]</li>
+                    <li><strong>Basics:</strong>
+                        <ul>
+                            [cite_start]<li>Control Systems, Sensors & Actuators [cite: 3]</li>
+                            [cite_start]<li>Microcontrollers & PLC basics [cite: 3]</li>
+                            [cite_start]<li>Solid Mechanics, Manufacturing processes [cite: 3]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Entry certifications:</strong>
+                        <ul>
+                            [cite_start]<li>Arduino basics, MATLAB Simulink [cite: 3]</li>
+                            [cite_start]<li>PLC basics (Siemens / Allen Bradley) [cite: 3]</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="roadmap-step">
+                <h3>🚀 Layer 2 – Skill Specialization:</h3>
+                <ul>
+                    <li><strong>Advanced courses:</strong>
+                        <ul>
+                            [cite_start]<li>Embedded Systems (AVR, ARM, Raspberry Pi) [cite: 3]</li>
+                            [cite_start]<li>Robotics: Kinematics, Dynamics, Path planning [cite: 3]</li>
+                            [cite_start]<li>CAD + CAE tools: SolidWorks, ANSYS [cite: 3]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Certifications:</strong>
+                        <ul>
+                            [cite_start]<li>Siemens Mechatronics Systems Certification [cite: 3]</li>
+                            [cite_start]<li>NI LabVIEW certification [cite: 3]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Projects:</strong>
+                        <ul>
+                            [cite_start]<li>Autonomous robot, pick & place arm, smart conveyor [cite: 3]</li>
+                            [cite_start]<li>Home automation systems [cite: 3]</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="roadmap-step">
+                <h3>🏆 Layer 3 – Career & Mastery:</h3>
+                <ul>
+                    <li><strong>Higher studies / exams:</strong>
+                        <ul>
+                            [cite_start]<li>GATE for M.Tech Robotics/Mechatronics [cite: 4]</li>
+                            [cite_start]<li>GRE for MS in Robotics abroad [cite: 4]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Jobs:</strong>
+                        <ul>
+                            [cite_start]<li>Automation industry, Robotics startups, R&D [cite: 4]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Portfolio:</strong>
+                        <ul>
+                            [cite_start]<li>GitHub repos for embedded code, robot videos, CAD files [cite: 4]</li>
+                        </ul>
+                    </li>
+                    <li><strong>Soft skills:</strong>
+                        <ul>
+                            [cite_start]<li>Problem-solving, multidisciplinary teamwork, project documentation [cite: 4]</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="roadmap-section">
+            <h2>✅ Step 2: Practical roadmap snapshot</h2>
+            [cite_start]<p>1️⃣ <strong>Entry:</strong> Degree + core subjects + CAD basics [cite: 379]</p>
+            [cite_start]<p>2️⃣ <strong>Specialization:</strong> Advanced CAD/FEA + projects + SAE team [cite: 379]</p>
+            [cite_start]<p>3️⃣ <strong>Career mastery:</strong> GATE/MS + certifications + apply to target companies [cite: 379]</p>
+        </div>
+
+        <div class="roadmap-section">
+            <h2>🌟 Step 3: Add extra detail</h2>
+            <ul>
+                <li><strong>Trending tools:</strong>
+                    <ul>
+                        [cite_start]<li>SolidWorks, LabVIEW, ROS (Robot Operating System), Arduino IDE [cite: 4]</li>
+                    </ul>
+                </li>
+                <li><strong>Avg salary:</strong>
+                    <ul>
+                        [cite_start]<li>India: ₹4–8 LPA [cite: 4]</li>
+                        [cite_start]<li>Abroad: $55–90K [cite: 4]</li>
+                    </ul>
+                </li>
+                <li><strong>What next (3+ yrs):</strong>
+                    <ul>
+                        [cite_start]<li>Robotics Eng → Automation Lead → Tech Manager [cite: 4]</li>
+                        [cite_start]<li>Start own robotics product / patent [cite: 4]</li>
+                    </ul>
+                </li>
+                <li><strong>Companies to target:</strong>
+                    <ul>
+                        [cite_start]<li>ABB, Fanuc, Bosch, Siemens, GreyOrange, KUKA Robotics, Universal Robots [cite: 4]</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <button onclick="goToHome()" class="btn primary-blue" style="margin-top: 40px; margin-bottom: 40px;">← Back to Home</button>
+</main>
+
+</body>
+</html>
