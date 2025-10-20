@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skillite – Find Your Path</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --dark-blue-bg: #0a101d;
+        --mid-blue-bg: #141f33;
+        --neon-blue: #007bff;
+        --light-neon-blue: #37a8ff;
+        --neon-orange: #ffa500;
+        --dark-orange: #ff8c00;
+        --text-light: #e0f2f7;
+        --text-muted: #99aab5;
+        --shadow-blue: rgba(0, 123, 255, 0.6);
+        --shadow-orange: rgba(255, 140, 0, 0.6);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, var(--dark-blue-bg), var(--mid-blue-bg), var(--dark-blue-bg));
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        overflow-x: hidden;
+        padding-top: 80px; /* Space for fixed navbar */
+        box-sizing: border-box;
+    }
+
+    /* --- Navbar Styling (copied from index.html) --- */
+    .navbar {
+        width: 100%;
+        background-color: rgba(10, 16, 29, 0.9);
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .navbar-brand {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8em;
+        color: var(--neon-blue);
+        text-shadow: 0 0 5px var(--neon-blue);
+        flex-grow: 1;
+        text-align: center;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowBlueText 2s ease-in-out infinite alternate;
+    }
+
+    .navbar-brand span {
+        font-size: 0.6em;
+        display: block;
+        font-weight: 400;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, var(--neon-orange), var(--dark-orange), var(--neon-orange));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowOrangeText 2s ease-in-out infinite alternate;
+        margin-top: 5px;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        gap: 15px;
+        margin-left: auto;
+    }
+    .navbar-buttons .btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    /* Hamburger Menu Icon (copied from index.html) */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .hamburger .line {
+        width: 100%;
+        height: 3px;
+        background-color: var(--neon-blue);
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 5px var(--neon-blue);
+    }
+
+    .hamburger.open .line:nth-child(1) {
+        transform: translateY(11px) rotate(45deg);
+    }
+    .hamburger.open .line:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.open .line:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg);
+    }
+
+    /* --- Sidebar Styling (copied from index.html) --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 280px;
+        height: 100%;
+        background-color: rgba(10, 16, 29, 0.95);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7);
+        transition: left 0.4s ease-in-out;
+        z-index: 999;
+        padding-top: 80px;
+        overflow-y: auto;
+        border-right: 1px solid rgba(0, 123, 255, 0.3);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar ul li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar ul li a {
+        display: block;
+        padding: 15px 25px;
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+        text-align: left;
+        border-left: 5px solid transparent;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li.active > a {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--neon-blue);
+        text-shadow: 0 0 8px var(--neon-blue);
+        border-left-color: var(--neon-blue);
+    }
+
+    .sidebar ul li .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .sidebar ul li .sub-menu.open {
+        max-height: 500px;
+    }
+
+    .sidebar ul li .sub-menu li a {
+        padding: 10px 25px 10px 45px;
+        font-size: 0.95em;
+        color: var(--text-muted);
+    }
+
+    .sidebar ul li .sub-menu li a:hover {
+        background-color: rgba(255, 165, 0, 0.1);
+        color: var(--neon-orange);
+        text-shadow: 0 0 5px var(--neon-orange);
+        border-left-color: var(--neon-orange);
+    }
+
+    /* --- Page Content Specific Styling --- */
+    main {
+        padding: 0; /* No padding here, containers inside will have it */
+        width: 100%;
+        flex-grow: 1; /* Make main take available vertical space */
+        display: flex; /* Make main a flex container to manage its children */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* Center content vertically initially */
+        position: relative; /* For absolute positioning if needed */
+    }
+
+    #form-container {
+        display: flex; /* Initially visible */
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 600px; /* Limit width for readability */
+        padding: 30px 20px;
+        box-sizing: border-box;
+    }
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3em;
+        margin-top: 0;
+        margin-bottom: 30px;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(55, 168, 255, 0.5),
+            0 0 30px rgba(55, 168, 255, 0.3);
+        animation: neonGlowBlue 1.5s ease-in-out infinite alternate;
+    }
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgba(10, 16, 29, 0.7);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+        border: 1px solid rgba(0, 123, 255, 0.1);
+    }
+
+    label {
+        font-size: 1.1em;
+        margin-top: 20px;
+        margin-bottom: 5px;
+        color: var(--text-light);
+        text-shadow: 0 0 3px rgba(224, 242, 247, 0.3);
+        font-weight: 600;
+        text-align: left;
+        width: 100%;
+    }
+
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--neon-blue);
+        background-color: rgba(20, 31, 51, 0.9);
+        color: var(--text-light);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1em;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23e0f2f7" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: var(--light-neon-blue);
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+
+    button[type="submit"] {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 15px 35px;
+        font-size: 1.1em;
+        border: 2px solid var(--dark-orange);
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        background: linear-gradient(45deg, var(--dark-orange), var(--neon-orange));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-orange),
+            0 0 20px rgba(255, 140, 0, 0.4),
+            0 0 30px rgba(255, 140, 0, 0.2);
+    }
+
+    button[type="submit"]:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-orange),
+            0 0 30px rgba(255, 140, 0, 0.6),
+            0 0 45px rgba(255, 140, 0, 0.4);
+        background: linear-gradient(45deg, var(--neon-orange), var(--dark-orange));
+        border-color: var(--neon-orange);
+    }
+
+    /* --- Thank You Message Container --- */
+    #thank-you-container {
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        justify-content: center; /* Center vertically */
+        align-items: center; /* Center horizontally */
+        flex-grow: 1; /* Take up available space */
+        width: 100%;
+        max-width: 800px; /* Allow wider for large text */
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    #thank-you-container .message-text { /* Specific class for the text within the container */
+        font-size: 2.5em; /* Make it very prominent */
+        margin-bottom: 40px;
+        color: var(--light-neon-blue); /* Stronger blue */
+        text-shadow: 0 0 10px var(--light-neon-blue), 0 0 20px rgba(55, 168, 255, 0.5);
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    a.back-link {
+        display: inline-block;
+        padding: 15px 35px; /* Make it look like a prominent button */
+        font-size: 1.1em;
+        background-color: transparent;
+        color: var(--neon-blue);
+        border: 2px solid var(--neon-blue);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    a.back-link:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--light-neon-blue);
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+        transform: translateY(-2px);
+    }
+
+    /* Neon Glow Animations (copied from index.html) */
+    @keyframes neonGlowBlue {
+        from {
+            text-shadow:
+                0 0 10px var(--shadow-blue),
+                0 0 20px rgba(55, 168, 255, 0.5),
+                0 0 30px rgba(55, 168, 255, 0.3);
+        }
+        to {
+            text-shadow:
+                0 0 15px rgba(0, 123, 255, 0.9),
+                0 0 25px rgba(0, 123, 255, 0.7),
+                0 0 40px rgba(0, 123, 255, 0.5);
+        }
+    }
+    @keyframes neonGlowOrange {
+        from {
+            text-shadow:
+                0 0 8px rgba(255, 215, 0, 0.6),
+                0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        to {
+            text-shadow:
+                0 0 12px rgba(255, 215, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.6);
+        }
+    }
+    @keyframes neonGlowBlueText {
+        0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--light-neon-blue); }
+        100% { text-shadow: 0 0 8px var(--neon-blue), 0 0 15px var(--light-neon-blue), 0 0 20px rgba(55, 168, 255, 0.3); }
+    }
+    @keyframes neonGlowOrangeText {
+        0% { text-shadow: 0 0 3px var(--neon-orange), 0 0 6px var(--dark-orange); }
+        100% { text-shadow: 0 0 5px var(--neon-orange), 0 0 10px var(--dark-orange), 0 0 15px rgba(255, 165, 0, 0.3); }
+    }
+
+    /* Media Queries */
+    @media (max-width: 900px) {
+        .navbar {
+            padding: 15px 20px;
+        }
+        .navbar-brand {
+            font-size: 1.5em;
+            text-align: left;
+            flex-grow: 0;
+        }
+        .navbar-brand span {
+            display: none;
+        }
+        .navbar-buttons {
+            display: none;
+        }
+        .hamburger {
+            margin-right: auto;
+        }
+
+        h1 {
+            font-size: 2.2em;
+        }
+        #form-container {
+            padding: 20px;
+        }
+        label, select, button[type="submit"] {
+            font-size: 0.95em;
+        }
+        button[type="submit"] {
+            padding: 12px 25px;
+        }
+        #thank-you-container .message-text {
+            font-size: 1.8em;
+        }
+        a.back-link {
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        #form-container {
+            padding: 15px;
+        }
+        label {
+            margin-top: 15px;
+        }
+        select {
+            padding: 10px 12px;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+        #thank-you-container .message-text {
+            font-size: 1.4em;
+        }
+    }
+</style>
+<script>
+// Main script for sidebar and navbar interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const hasSubmenus = document.querySelectorAll('.has-submenu > a');
+
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+        hamburger.classList.toggle('open');
+    });
+
+    hasSubmenus.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subMenu = this.nextElementSibling;
+            if (subMenu && subMenu.classList.contains('sub-menu')) {
+                subMenu.classList.toggle('open');
+                this.parentElement.classList.toggle('active');
+            }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnHamburger = hamburger.contains(event.target);
+        const isClickOnNavbarButton = event.target.closest('.navbar-buttons');
+
+        if (sidebar.classList.contains('open') && !isClickInsideSidebar && !isClickOnHamburger && !isClickOnNavbarButton) {
+            sidebar.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+            document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+        }
+    });
+
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!this.parentElement.classList.contains('has-submenu')) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('open');
+                document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+                document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+            }
+        });
+    });
+
+    // --- NEW / MODIFIED SCRIPT FOR FORM SUBMISSION ---
+    function showThankYouMessage() {
+        const formContainer = document.getElementById('form-container');
+        const thankYouContainer = document.getElementById('thank-you-container');
+        const messageTextElement = thankYouContainer.querySelector('.message-text'); // Get the specific text element
+
+        // Hide the form section
+        formContainer.style.display = 'none';
+
+        // Update message text
+        messageTextElement.textContent = "Thank you! Your mentor will connect with you soon.";
+
+        // Show the thank you section
+        thankYouContainer.style.display = 'flex'; // Use flex to center its content
+    }
+
+    // Assign the new function to the window object so it's accessible from inline HTML's onsubmit
+    window.showMessage = showThankYouMessage; // Renamed to clarify function, but kept `showMessage` for inline call
+});
+</script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="hamburger" id="hamburger">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    <div class="navbar-brand">
+        SKILLITE
+        <span>LEARN SKILLS, BECOME ELITE</span>
+    </div>
+    <div class="navbar-buttons">
+        <a href="signup.html" class="btn primary">Sign up</a>
+        <a href="login.html" class="btn">Log in</a>
+    </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+    <ul>
+        <li><a href="index.html">🏠 Home</a>
+            <ul class="sub-menu">
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Latest Posts</a></li>
+                <li><a href="#">Notifications</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">👤 Your Profile</a>
+            <ul class="sub-menu">
+                <li><a href="#">Name</a></li>
+                <li><a href="#">College</a></li>
+                <li><a href="#">Branch</a></li>
+                <li><a href="#">Interests</a></li>
+                <li><a href="#">Skill Levels</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧑‍🏫 Your Mentor</a>
+            <ul class="sub-menu">
+                <li><a href="#">Assigned Mentor Info</a></li>
+                <li><a href="#">Chat / Message</a></li>
+                <li><a href="#">Change Request</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📊 Roadmap / Progress</a>
+            <ul class="sub-menu">
+                <li><a href="#">Personalized Roadmap</a></li>
+                <li><a href="#">Completed Steps</a></li>
+                <li><a href="#">Upcoming Milestones</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎯 Your Skills</a>
+            <ul class="sub-menu">
+                <li><a href="#">Added Skills</a></li>
+                <li><a href="#">Suggested Skills</a></li>
+                <li><a href="#">Certificates</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📚 Learning Hub</a>
+            <ul class="sub-menu">
+                <li><a href="#">Tutorials</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Masterclasses</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧰 Tools & Resources</a>
+            <ul class="sub-menu">
+                <li><a href="#">Resume Builder</a></li>
+                <li><a href="#">Interview Tips</a></li>
+                <li><a href="#">Aptitude Quizzes</a></li>
+                <li><a href="#">Coding Playground</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🗺 Explore Fields</a>
+            <ul class="sub-menu">
+                <li><a href="#">Branch-wise Fields</a></li>
+                <li><a href="#">Emerging Technologies</a></li>
+                <li><a href="#">Market Trends</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💼 Job Opportunities</a>
+            <ul class="sub-menu">
+                <li><a href="#">Internships</a></li>
+                <li><a href="#">Fresher Jobs</a></li>
+                <li><a href="#">Top Companies</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎓 GATE & Higher Studies</a>
+            <ul class="sub-menu">
+                <li><a href="#">Exam Guides</a></li>
+                <li><a href="#">Updates & Notifications</a></li>
+                <li><a href="#">Application Reminders</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📅 Events & Webinars</a>
+            <ul class="sub-menu">
+                <li><a href="#">Upcoming Events</a></li>
+                <li><a href="#">Past Recordings</a></li>
+                <li><a href="#">Register</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💬 Feedback / Suggest Topics</a>
+            <ul class="sub-menu">
+                <li><a href="#">Feedback Form</a></li>
+                <li><a href="#">Quick DM</a></li>
+            </ul>
+        </li>
+        <li><a href="#">🔒 Log Out</a></li>
+    </ul>
+</div>
+
+<main>
+    <div id="form-container">
+        <h1>Find Your Path – SKILLITE</h1>
+        <form onsubmit="event.preventDefault(); showMessage();">
+            <label for="field">Choose your broad field after 12th:</label>
+            <select id="field" name="field" required>
+                <option value="">-- Select Field --</option>
+                <option value="engineering">Engineering</option>
+                <option value="medical">Medical / MBBS / BDS</option>
+                <option value="bba">BBA / Management</option>
+                <option value="bsc">B.Sc / Science</option>
+                <option value="arts">Arts / Humanities</option>
+                <option value="commerce">Commerce / CA / CS</option>
+            </select>
+
+            <label for="subfield">Select your interest area:</label>
+            <select id="subfield" name="subfield" required>
+                <option value="">-- Select Subfield --</option>
+                <option value="software">Engineering → Software Development</option>
+                <option value="hardware">Engineering → Hardware / Embedded</option>
+                <option value="ai">Engineering → AI / ML</option>
+                <option value="civil">Engineering → Civil / Structure</option>
+                <option value="mbbs">Medical → MBBS</option>
+                <option value="dentist">Medical → Dentistry</option>
+                <option value="biotech">Science → Biotech</option>
+                <option value="data">B.Sc → Data Science</option>
+                <option value="finance">Commerce → Finance / CA</option>
+                <option value="law">Arts → Law</option>
+                <option value="design">Arts → Design / Animation</option>
+            </select>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="thank-you-container">
+        <div class="message-text"></div> <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+</main>
+
+</body>
+</html>

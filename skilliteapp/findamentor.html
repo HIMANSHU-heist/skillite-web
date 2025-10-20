@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Mentor – SKILLITE</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --dark-blue-bg: #0a101d;
+        --mid-blue-bg: #141f33;
+        --neon-blue: #007bff;
+        --light-neon-blue: #37a8ff;
+        --neon-orange: #ffa500;
+        --dark-orange: #ff8c00;
+        --text-light: #e0f2f7;
+        --text-muted: #99aab5;
+        --shadow-blue: rgba(0, 123, 255, 0.6);
+        --shadow-orange: rgba(255, 140, 0, 0.6);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, var(--dark-blue-bg), var(--mid-blue-bg), var(--dark-blue-bg));
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        overflow-x: hidden;
+        padding-top: 80px; /* Space for fixed navbar */
+        box-sizing: border-box;
+    }
+
+    /* --- Navbar Styling --- */
+    .navbar {
+        width: 100%;
+        background-color: rgba(10, 16, 29, 0.9);
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-sizing: border-box;
+    }
+
+    .navbar-brand {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8em;
+        color: var(--neon-blue);
+        text-shadow: 0 0 5px var(--neon-blue);
+        text-align: left;
+        white-space: nowrap;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowBlueText 2s ease-in-out infinite alternate;
+        margin-right: 20px;
+        flex-grow: 1;
+    }
+
+    .navbar-brand span {
+        font-size: 0.6em;
+        display: block;
+        font-weight: 400;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, var(--neon-orange), var(--dark-orange), var(--neon-orange));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowOrangeText 2s ease-in-out infinite alternate;
+        margin-top: 5px;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+    .navbar-buttons .btn {
+        padding: 2px ,20px;
+        font-size: 0.9em;
+    }
+
+    /* Hamburger Menu Icon */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        cursor: pointer;
+        z-index: 1001;
+        margin-right: 20px;
+    }
+
+    .hamburger .line {
+        width: 100%;
+        height: 3px;
+        background-color: var(--neon-blue);
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 5px var(--neon-blue);
+    }
+
+    .hamburger.open .line:nth-child(1) {
+        transform: translateY(11px) rotate(45deg);
+    }
+    .hamburger.open .line:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.open .line:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg);
+    }
+
+    /* --- Sidebar Styling --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px; /* Hidden by default */
+        width: 280px;
+        height: 100%;
+        background-color: rgba(10, 16, 29, 0.95);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7);
+        transition: left 0.4s ease-in-out;
+        z-index: 999;
+        padding-top: 80px;
+        overflow-y: auto;
+        border-right: 1px solid rgba(0, 123, 255, 0.3);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar ul li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar ul li a {
+        display: block;
+        padding: 15px 25px;
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+        text-align: left;
+        border-left: 5px solid transparent;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li.active > a {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--neon-blue);
+        text-shadow: 0 0 8px var(--neon-blue);
+        border-left-color: var(--neon-blue);
+    }
+
+    /* Styles for signup/login buttons inside sidebar */
+    .sidebar .sidebar-auth-buttons {
+        display: none; /* Hidden by default for desktop, shown on mobile */
+        padding: 20px 25px;
+        gap: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .sidebar .sidebar-auth-buttons .btn {
+        width: calc(50% - 10px);
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+
+    .sidebar ul li .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .sidebar ul li .sub-menu.open {
+        max-height: 500px;
+    }
+
+    .sidebar ul li .sub-menu li a {
+        padding: 10px 25px 10px 45px;
+        font-size: 0.95em;
+        color: var(--text-muted);
+    }
+
+    .sidebar ul li .sub-menu li a:hover {
+        background-color: rgba(255, 165, 0, 0.1);
+        color: var(--neon-orange);
+        text-shadow: 0 0 5px var(--neon-orange);
+        border-left-color: var(--neon-orange);
+    }
+
+    /* --- Page Content Specific Styling --- */
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* Center content vertically */
+        flex-grow: 1;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3em;
+        margin-top: 0;
+        margin-bottom: 40px;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(55, 168, 255, 0.5),
+            0 0 30px rgba(55, 168, 255, 0.3);
+        animation: neonGlowBlue 1.5s ease-in-out infinite alternate;
+    }
+
+    .form-container {
+        background-color: rgba(10, 16, 29, 0.7);
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+        border: 1px solid rgba(0, 123, 255, 0.1);
+        backdrop-filter: blur(5px);
+        width: 100%;
+        max-width: 500px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dropdown-group {
+        width: 100%;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    label {
+        display: block;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+
+    select {
+        width: 100%;
+        padding: 12px 10px;
+        border: 1px solid var(--neon-blue);
+        border-radius: 8px;
+        background-color: rgba(20, 31, 51, 0.9);
+        color: var(--text-light);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1em;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23007bff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px top 50%;
+        background-size: 20px auto;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: var(--light-neon-blue);
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 15px 35px;
+        font-size: 1.1em;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        width: 100%;
+        margin-top: 20px;
+        box-sizing: border-box;
+    }
+
+    .btn.primary-orange {
+        background: linear-gradient(45deg, var(--dark-orange), var(--neon-orange));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-orange),
+            0 0 20px rgba(255, 140, 0, 0.4),
+            0 0 30px rgba(255, 140, 0, 0.2);
+        border-color: var(--dark-orange);
+    }
+
+    .btn.primary-blue {
+        background: linear-gradient(45deg, var(--neon-blue), var(--light-neon-blue));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(0, 123, 255, 0.4),
+            0 0 30px rgba(0, 123, 255, 0.2);
+        border-color: var(--neon-blue);
+    }
+
+    .btn.primary-orange:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-orange),
+            0 0 30px rgba(255, 140, 0, 0.6),
+            0 0 45px rgba(255, 140, 0, 0.4);
+        background: linear-gradient(45deg, var(--neon-orange), var(--dark-orange));
+        border-color: var(--neon-orange);
+    }
+
+    .btn.primary-blue:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-blue),
+            0 0 30px rgba(0, 123, 255, 0.6),
+            0 0 45px rgba(0, 123, 255, 0.4);
+        background: linear-gradient(45deg, var(--light-neon-blue), var(--neon-blue));
+        border-color: var(--light-neon-blue);
+    }
+
+    /* Message and buttons on submit */
+    #mentorSuccess {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        width: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    #mentorSuccess.hidden {
+        display: none;
+    }
+
+    .message {
+        margin-top: 0;
+        margin-bottom: 30px;
+        font-size: 1.8em;
+        color: var(--light-neon-blue);
+        text-shadow: 0 0 8px var(--light-neon-blue), 0 0 15px rgba(55, 168, 255, 0.5);
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* Styling for the new buttons within mentorSuccess */
+    #mentorSuccess .btn {
+        width: auto;
+        max-width: 300px;
+        margin-top: 20px;
+        padding: 15px 30px;
+        font-size: 1em;
+    }
+
+
+    /* Neon Glow Animations */
+    @keyframes neonGlowBlue {
+        from {
+            text-shadow:
+                0 0 10px var(--shadow-blue),
+                0 0 20px rgba(55, 168, 255, 0.5),
+                0 0 30px rgba(55, 168, 255, 0.3);
+        }
+        to {
+            text-shadow:
+                0 0 15px rgba(0, 123, 255, 0.9),
+                0 0 25px rgba(0, 123, 255, 0.7),
+                0 0 40px rgba(0, 123, 255, 0.5);
+        }
+    }
+    @keyframes neonGlowOrange {
+        from {
+            text-shadow:
+                0 0 8px rgba(255, 215, 0, 0.6),
+                0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        to {
+            text-shadow:
+                0 0 12px rgba(255, 215, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.6);
+        }
+    }
+    @keyframes neonGlowBlueText {
+        0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--light-neon-blue); }
+        100% { text-shadow: 0 0 8px var(--neon-blue), 0 0 15px var(--light-neon-blue), 0 0 20px rgba(55, 168, 255, 0.3); }
+    }
+    @keyframes neonGlowOrangeText {
+        0% { text-shadow: 0 0 3px var(--neon-orange), 0 0 6px var(--dark-orange); }
+        100% { text-shadow: 0 0 5px var(--neon-orange), 0 0 10px var(--dark-orange), 0 0 15px rgba(255, 165, 0, 0.3); }
+    }
+
+    /* Media Queries */
+    @media (max-width: 900px) {
+        .navbar {
+            padding: 15px 20px;
+        }
+        .navbar-brand {
+            font-size: 1.5em;
+            text-align: center;
+            flex-grow: 1;
+            margin-right: 0;
+        }
+        .navbar-brand span {
+            display: none;
+        }
+        .navbar-buttons {
+            display: none;
+        }
+        .hamburger {
+            margin-right: 0;
+        }
+        .sidebar .sidebar-auth-buttons {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+        }
+        .form-container {
+            padding: 25px 30px;
+        }
+        select {
+            padding: 10px;
+        }
+        #mentorSuccess .btn {
+            width: 80%;
+            max-width: unset;
+        }
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.8em;
+        }
+        .form-container {
+            padding: 20px 25px;
+        }
+        .message {
+            font-size: 1.2em;
+        }
+        .sidebar .sidebar-auth-buttons .btn {
+            width: 100%;
+        }
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const hasSubmenus = document.querySelectorAll('.has-submenu > a');
+
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+        hamburger.classList.toggle('open');
+    });
+
+    hasSubmenus.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subMenu = this.nextElementSibling;
+            if (subMenu && subMenu.classList.contains('sub-menu')) {
+                subMenu.classList.toggle('open');
+                this.parentElement.classList.toggle('active');
+            }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnHamburger = hamburger.contains(event.target);
+        const isClickOnNavbarButton = event.target.closest('.navbar-buttons');
+
+        if (sidebar.classList.contains('open') && !isClickInsideSidebar && !isClickOnHamburger && !isClickOnNavbarButton) {
+            sidebar.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+            document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+        }
+    });
+
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!this.parentElement.classList.contains('has-submenu') && !this.closest('.sidebar-auth-buttons')) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('open');
+                document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+                document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+            }
+        });
+    });
+
+    // --- Mentor Page Specific JavaScript ---
+    const fieldSelect = document.getElementById('fieldSelect');
+    const subfieldGroup = document.getElementById('subfieldGroup');
+    const subfieldSelect = document.getElementById('subfieldSelect');
+    const mentorForm = document.getElementById('mentorForm');
+    const mentorSuccess = document.getElementById('mentorSuccess');
+
+    const subfields = {
+        "Engineering": ["Software Engineering", "Hardware Engineering", "Electronics & Telecommunication", "Electrical Engineering", "Mechanical Engineering", "Civil Engineering", "Chemical Engineering", "Aerospace Engineering", "Mechatronics", "Robotics", "Production & Industrial Engineering", "Instrumentation Engineering", "Biomedical Engineering", "Biotechnology", "Automotive Engineering", "Marine Engineering", "Petroleum Engineering", "Mining Engineering", "Metallurgical Engineering", "Textile Engineering", "Agricultural Engineering", "Environmental Engineering", "Structural Engineering", "AI & Machine Learning", "Data Science", "Cloud Computing", "Cybersecurity", "Embedded Systems", "VLSI / Chip Design", "AR/VR Engineering", "Software + Hardware Hybrid (IoT, Smart Devices)"],
+        "Medical / Healthcare": ["MBBS", "BDS", "BAMS", "BHMS", "BUMS", "Nursing", "Pharmacy", "Physiotherapy", "Occupational Therapy", "Medical Lab Technology", "Radiology", "Optometry", "Veterinary Science", "Speech & Hearing", "Public Health", "Hospital Management", "Clinical Research", "Nutrition & Dietetics", "Emergency Medical Technology", "Medical Imaging Technology"],
+        "Science (B.Sc / M.Sc)": ["Physics", "Chemistry", "Mathematics", "Statistics", "Botany", "Zoology", "Geology", "Environmental Science", "Biochemistry", "Microbiology", "Biotechnology", "Genetics", "Forensic Science", "Computer Science", "Information Technology", "Cybersecurity", "Data Science", "Artificial Intelligence", "Food Technology", "Home Science", "Nautical Science", "Astrophysics", "Oceanography"],
+        "Commerce & Management": ["B.Com", "BBA", "MBA", "CA", "CS", "CMA", "Banking & Insurance", "Financial Planning", "International Business", "Retail Management", "Supply Chain", "Tourism", "Event Management", "Digital Marketing", "HR Management", "Marketing"],
+        "Arts / Humanities": ["BA History", "Geography", "Political Science", "Psychology", "Sociology", "Philosophy", "Economics", "Languages", "Journalism", "Media Studies", "Film Studies", "Performing Arts", "Fine Arts", "Fashion Design", "Interior Design", "Animation & VFX", "Culinary Arts", "Hotel Management", "Archaeology", "Social Work", "International Relations"],
+        "Computer & IT specialisations": ["Software Development", "Full Stack", "Web Development", "Mobile App Development", "Game Development", "AI", "ML", "Data Science", "Cybersecurity", "Cloud Computing", "Blockchain", "DevOps", "UI/UX Design", "Database Management", "AR/VR", "IoT"],
+        "Design & Creative": ["Graphic Design", "Product Design", "Industrial Design", "Fashion Design", "Jewellery Design", "Interior Design", "Animation", "VFX", "UI/UX Design", "Game Design", "Visual Communication", "Photography", "Film Production", "Advertising Design"],
+        "Law & Legal Studies": ["LLB", "LLM", "Corporate Law", "Criminal Law", "Civil Law", "IP Rights", "Cyber Law", "International Law", "Environmental Law", "Labour Law", "Constitutional Law"],
+        "Agriculture & Allied Fields": ["B.Sc Agriculture", "Horticulture", "Forestry", "Dairy Technology", "Fisheries", "Food Technology", "Sericulture", "Agricultural Engineering", "Agricultural Economics"],
+        "Other Specialized / Vocational": ["Aviation", "Merchant Navy", "Fire & Safety", "Physical Education", "Yoga & Naturopathy", "Beauty & Wellness", "Languages", "Event Management", "Travel & Tourism", "Maritime Studies", "Library Science", "Rural Development", "Disaster Management"],
+        "Defence & Government": ["NDA/CDS", "Army/Navy/Air Force", "Police", "Civil Services", "SSC/Banking/Railways", "Intelligence Bureau", "Paramilitary Forces"],
+        "Education & Research": ["Teaching", "Research (Ph.D/M.Phil)", "Educational Administration", "E-learning", "Educational Counselling"]
+    };
+
+    // IMPORTANT: This object maps selected field/subfield combinations to their roadmap HTML files.
+    // You MUST create these HTML files (e.g., 'hardware-engineering-roadmap.html')
+    // and ensure their paths are correct here.
+    const roadmapURLs = {
+        "Engineering": {
+            "Software Engineering": "software-engineering-roadmap.html",
+            "Hardware Engineering": "hardware-engineering-roadmap.html", // Example: Add this when you create the file
+            "Electronics & Telecommunication": "electronics-telecom-roadmap.html", // Example
+            // Add more subfields for Engineering here
+        },
+        "Medical / Healthcare": {
+            "MBBS": "mbbs-roadmap.html", // Example
+            "Nursing": "nursing-roadmap.html", // Example
+            // Add more subfields for Medical / Healthcare here
+        },
+        // Add more top-level fields and their subfield roadmaps here
+        // "Computer & IT specialisations": {
+        //     "AI": "ai-roadmap.html",
+        //     "Data Science": "data-science-roadmap.html",
+        // },
+        // ... and so on for all your fields
+    };
+
+    fieldSelect.addEventListener('change', function() {
+        const selectedField = this.value;
+        subfieldSelect.innerHTML = '<option value="">Select Subfield</option>'; // Reset subfield options
+
+        if (selectedField && subfields[selectedField]) {
+            subfields[selectedField].forEach(subfield => {
+                const option = document.createElement('option');
+                option.value = subfield;
+                option.textContent = subfield;
+                subfieldSelect.appendChild(option);
+            });
+            subfieldGroup.style.display = 'block'; // Show subfield dropdown
+        } else {
+            subfieldGroup.style.display = 'none'; // Hide if no field or no subfields
+        }
+    });
+
+    mentorForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const selectedField = fieldSelect.value;
+        const selectedSubfield = subfieldSelect.value;
+
+        // Basic validation before showing success message
+        if (!selectedField || !selectedSubfield) {
+            alert("Please select both a Field and a Subfield.");
+            return; // Stop execution if validation fails
+        }
+
+        console.log("Selected Field:", selectedField);
+        console.log("Selected Subfield:", selectedSubfield);
+
+        // Hide form and show success message with buttons
+        mentorForm.style.display = 'none';
+        mentorSuccess.classList.remove('hidden');
+    });
+});
+
+function goToHome() {
+    window.location.href = "index.html"; // Redirect to your home page
+}
+
+// Function to dynamically redirect to the specific roadmap page
+function viewRoadmap() {
+    const fieldSelect = document.getElementById('fieldSelect');
+    const subfieldSelect = document.getElementById('subfieldSelect');
+    const selectedField = fieldSelect.value;
+    const selectedSubfield = subfieldSelect.value;
+
+    // Use the roadmapURLs object defined in the DOMContentLoaded listener
+    // Re-defining it here for clarity, but in a larger app, you might make it global or pass it.
+    const roadmapURLs = {
+        "Engineering": {
+            "Software Engineering": "/software.html",
+            "Hardware Engineering": "/hardware.html", // Example: Add this when you create the file
+            "Electronics & Telecommunication": "/extc.html", // Example
+            "Electrical Engineering": "/electronics.html", // Example
+            "Mechanical Engineering": "/mechanical.html", // Example
+            "Civil Engineering": "/civil.html", // Example
+            "Chemical Engineering": "/chemical.html", // Example
+            "Aerospace Engineering": "/areospace.html", // Example
+            "Mechatronics": "/mechatronics.html", // Example
+            "Robotics": "/robotics.html", // Example
+            "Production & Industrial Engineering": "/production.html", // Example
+            "Instrumentation Engineering": "/instru.html", // Example
+            "Biomedical Engineering": "/biom.html", // Example
+            "Biotechnology": "/biotech.html", // Example
+            "Automotive Engineering": "automotive-engineering-roadmap.html", // Example
+            "Marine Engineering": "marine-engineering-roadmap.html", // Example
+            "Petroleum Engineering": "petroleum-engineering-roadmap.html", // Example
+            "Mining Engineering": "mining-engineering-roadmap.html", // Example
+            "Metallurgical Engineering": "metallurgical-engineering-roadmap.html", // Example
+            "Textile Engineering": "textile-engineering-roadmap.html", // Example
+            "Agricultural Engineering": "agricultural-engineering-roadmap.html", // Example
+            "Environmental Engineering": "environmental-engineering-roadmap.html", // Example
+            "Structural Engineering": "structural-engineering-roadmap.html", // Example
+            "AI & Machine Learning": "/AIML.html", // Example
+            "Data Science": "data-science-roadmap.html", // Example
+            "Cloud Computing": "cloud-computing-roadmap.html", // Example
+            "Cybersecurity": "/cyber.html", // Example
+            "Embedded Systems": "embedded-systems-roadmap.html", // Example
+            "VLSI / Chip Design": "/vlsi.html", // Example
+            "AR/VR Engineering": "/arvr.html", // Example
+            "Software + Hardware Hybrid (IoT, Smart Devices)": "iot-smart-devices-roadmap.html", // Example
+            
+            
+
+            // Add more subfields for Engineering here
+        },
+        "Medical / Healthcare": {
+            "MBBS": "mbbs-roadmap.html", // Example
+            "Nursing": "nursing-roadmap.html", // Example
+            // Add more subfields for Medical / Healthcare here
+        },
+        // Add more top-level fields and their subfield roadmaps here
+        // "Computer & IT specialisations": {
+        //     "AI": "ai-roadmap.html",
+        //     "Data Science": "data-science-roadmap.html",
+        // },
+        // ... and so on for all your fields
+    };
+
+
+    if (selectedField && selectedSubfield && roadmapURLs[selectedField] && roadmapURLs[selectedField][selectedSubfield]) {
+        window.location.href = roadmapURLs[selectedField][selectedSubfield];
+    } else {
+        // Fallback if no specific roadmap is found or selections are incomplete
+        alert("Roadmap not available for the selected combination yet. Please create the corresponding HTML file and add its path to the roadmapURLs object. Redirecting to home page.");
+        goToHome(); // Redirect to home as a fallback
+    }
+}
+</script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="hamburger" id="hamburger">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    <div class="navbar-brand">
+        SKILLITE
+        <span>LEARN SKILLS, BECOME ELITE</span>
+    </div>
+    <div class="navbar-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-auth-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+    <ul>
+        <li><a href="index.html">🏠 Home</a>
+            <ul class="sub-menu">
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Latest Posts</a></li>
+                <li><a href="#">Notifications</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">👤 Your Profile</a>
+            <ul class="sub-menu">
+                <li><a href="#">Name</a></li>
+                <li><a href="#">College</a></li>
+                <li><a href="#">Branch</a></li>
+                <li><a href="#">Interests</a></li>
+                <li><a href="#">Skill Levels</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧑‍🏫 Your Mentor</a>
+            <ul class="sub-menu">
+                <li><a href="#">Assigned Mentor Info</a></li>
+                <li><a href="#">Chat / Message</a></li>
+                <li><a href="#">Change Request</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📊 Roadmap / Progress</a>
+            <ul class="sub-menu">
+                <li><a href="#">Personalized Roadmap</a></li>
+                <li><a href="#">Completed Steps</a></li>
+                <li><a href="#">Upcoming Milestones</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎯 Your Skills</a>
+            <ul class="sub-menu">
+                <li><a href="#">Added Skills</a></li>
+                <li><a href="#">Suggested Skills</a></li>
+                <li><a href="#">Certificates</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📚 Learning Hub</a>
+            <ul class="sub-menu">
+                <li><a href="#">Tutorials</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Masterclasses</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧰 Tools & Resources</a>
+            <ul class="sub-menu">
+                <li><a href="#">Resume Builder</a></li>
+                <li><a href="#">Interview Tips</a></li>
+                <li><a href="#">Aptitude Quizzes</a></li>
+                <li><a href="#">Coding Playground</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🗺 Explore Fields</a>
+            <ul class="sub-menu">
+                <li><a href="#">Branch-wise Fields</a></li>
+                <li><a href="#">Emerging Technologies</a></li>
+                <li><a href="#">Market Trends</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💼 Job Opportunities</a>
+            <ul class="sub-menu">
+                <li><a href="#">Internships</a></li>
+                <li><a href="#">Fresher Jobs</a></li>
+                <li><a href="#">Top Companies</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎓 GATE & Higher Studies</a>
+            <ul class="sub-menu">
+                <li><a href="#">Exam Guides</a></li>
+                <li><a href="#">Updates & Notifications</a></li>
+                <li><a href="#">Application Reminders</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📅 Events & Webinars</a>
+            <ul class="sub-menu">
+                <li><a href="#">Upcoming Events</a></li>
+                <li><a href="#">Past Recordings</a></li>
+                <li><a href="#">Register</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💬 Feedback / Suggest Topics</a>
+            <ul class="sub-menu">
+                <li><a href="#">Feedback Form</a></li>
+                <li><a href="#">Quick DM</a></li>
+            </ul>
+        </li>
+        <li><a href="#">🔒 Log Out</a></li>
+    </ul>
+</div>
+
+<main>
+    <h1>Find Your Mentor</h1>
+
+    <div class="form-container">
+        <form id="mentorForm">
+            <div class="dropdown-group">
+                <label for="fieldSelect">Choose Field</label>
+                <select id="fieldSelect" required>
+                    <option value="">Select a field...</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Medical / Healthcare">Medical / Healthcare</option>
+                    <option value="Science (B.Sc / M.Sc)">Science (B.Sc / M.Sc)</option>
+                    <option value="Commerce & Management">Commerce & Management</option>
+                    <option value="Arts / Humanities">Arts / Humanities</option>
+                    <option value="Computer & IT specialisations">Computer & IT specialisations</option>
+                    <option value="Design & Creative">Design & Creative</option>
+                    <option value="Law & Legal Studies">Law & Legal Studies</option>
+                    <option value="Agriculture & Allied Fields">Agriculture & Allied Fields</option>
+                    <option value="Other Specialized / Vocational">Other Specialized / Vocational</option>
+                    <option value="Defence & Government">Defence & Government</option>
+                    <option value="Education & Research">Education & Research</option>
+                </select>
+            </div>
+
+            <div class="dropdown-group" id="subfieldGroup" style="display: none;">
+                <label for="subfieldSelect">Choose Subfield</label>
+                <select id="subfieldSelect" required>
+                    <option value="">Select Subfield</option>
+                    </select>
+            </div>
+
+            <button type="submit" class="btn primary-orange">Submit</button>
+        </form>
+
+        <div id="mentorSuccess" class="hidden">
+            <p class="message">✅ Thank you! Your mentor will connect with you very soon.</p>
+            <!-- The onclick event now calls the viewRoadmap function -->
+            <button class="btn primary-blue" onclick="viewRoadmap()">View Roadmap</button>
+            <button onclick="goToHome()" class="btn primary-orange">⬅ Back to Home</button>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

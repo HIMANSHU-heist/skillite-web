@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skillite – Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --dark-blue-bg: #0a101d;
+        --mid-blue-bg: #141f33;
+        --neon-blue: #007bff;
+        --light-neon-blue: #37a8ff;
+        --neon-orange: #ffa500;
+        --dark-orange: #ff8c00;
+        --text-light: #e0f2f7;
+        --text-muted: #99aab5;
+        --shadow-blue: rgba(0, 123, 255, 0.6);
+        --shadow-orange: rgba(255, 140, 0, 0.6);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, var(--dark-blue-bg), var(--mid-blue-bg), var(--dark-blue-bg));
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        overflow-x: hidden;
+        padding-top: 80px; /* Space for fixed navbar */
+        box-sizing: border-box;
+    }
+
+    /* --- Navbar Styling --- */
+    .navbar {
+        width: 100%;
+        background-color: rgba(10, 16, 29, 0.9);
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between; /* This is key for spreading items */
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-sizing: border-box;
+    }
+
+    .navbar-brand {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8em;
+        color: var(--neon-blue);
+        text-shadow: 0 0 5px var(--neon-blue);
+        text-align: left; /* Aligns the text itself within its flex item space */
+        white-space: nowrap;
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowBlueText 2s ease-in-out infinite alternate;
+        margin-right: 20px; /* Space between brand and buttons/hamburger */
+        flex-grow: 1; /* Allows brand to take up remaining space, pushing buttons right */
+    }
+
+    .navbar-brand span {
+        font-size: 0.6em;
+        display: block;
+        font-weight: 400;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, var(--neon-orange), var(--dark-orange), var(--neon-orange));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: neonGlowOrangeText 2s ease-in-out infinite alternate;
+        margin-top: 5px;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+    .navbar-buttons .btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    /* Hamburger Menu Icon */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        cursor: pointer;
+        z-index: 1001;
+        margin-right: 20px; /* Margin to push to the left of the brand on small screens */
+    }
+
+    .hamburger .line {
+        width: 100%;
+        height: 3px;
+        background-color: var(--neon-blue);
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 5px var(--neon-blue);
+    }
+
+    .hamburger.open .line:nth-child(1) {
+        transform: translateY(11px) rotate(45deg);
+    }
+    .hamburger.open .line:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.open .line:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg);
+    }
+
+    /* --- Sidebar Styling --- */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px; /* Hidden by default */
+        width: 280px; /* Width of sidebar */
+        height: 100%;
+        background-color: rgba(10, 16, 29, 0.95); /* Slightly darker, semi-transparent */
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7);
+        transition: left 0.4s ease-in-out;
+        z-index: 999; /* Below navbar, above content */
+        padding-top: 80px; /* Space for fixed navbar */
+        overflow-y: auto; /* Enable scrolling for long menus */
+        border-right: 1px solid rgba(0, 123, 255, 0.3); /* Subtle neon border */
+    }
+
+    .sidebar.open {
+        left: 0; /* Slide in */
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar ul li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar ul li a {
+        display: block;
+        padding: 15px 25px;
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+        text-align: left; /* Align menu items to the left */
+        border-left: 5px solid transparent; /* For active/hover highlight */
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li.active > a { /* Highlight for parent of open sub-menu */
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--neon-blue);
+        text-shadow: 0 0 8px var(--neon-blue);
+        border-left-color: var(--neon-blue);
+    }
+
+    /* Styles for signup/login buttons inside sidebar */
+    .sidebar .sidebar-auth-buttons {
+        display: none; /* Hidden by default for desktop, shown on mobile */
+        padding: 20px 25px;
+        gap: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        justify-content: center;
+        flex-wrap: wrap; /* Allow buttons to wrap if screen is very narrow */
+    }
+
+    .sidebar .sidebar-auth-buttons .btn {
+        width: calc(50% - 10px); /* Adjust width for two buttons side-by-side */
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin-bottom: 10px; /* Space between rows if wrapped */
+    }
+
+    .sidebar ul li .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+        background-color: rgba(0, 0, 0, 0.2); /* Slightly darker for sub-menu */
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .sidebar ul li .sub-menu.open {
+        max-height: 500px; /* Max height to allow transition */
+    }
+
+    .sidebar ul li .sub-menu li a {
+        padding: 10px 25px 10px 45px; /* Indent sub-menu items */
+        font-size: 0.95em;
+        color: var(--text-muted);
+    }
+
+    .sidebar ul li .sub-menu li a:hover {
+        background-color: rgba(255, 165, 0, 0.1);
+        color: var(--neon-orange);
+        text-shadow: 0 0 5px var(--neon-orange);
+        border-left-color: var(--neon-orange);
+    }
+
+    /* --- Page Content Specific Styling --- */
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* Center content vertically */
+        flex-grow: 1; /* Allow main to take up available vertical space */
+        width: 100%;
+        padding: 20px; /* Padding for main content area */
+        box-sizing: border-box;
+    }
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3em;
+        margin-top: 0;
+        margin-bottom: 40px; /* More space below title */
+        background: linear-gradient(90deg, var(--light-neon-blue), var(--neon-blue), var(--light-neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(55, 168, 255, 0.5),
+            0 0 30px rgba(55, 168, 255, 0.3);
+        animation: neonGlowBlue 1.5s ease-in-out infinite alternate;
+    }
+
+    form {
+        background-color: rgba(10, 16, 29, 0.7); /* Darker, semi-transparent background */
+        padding: 30px 40px; /* Increased padding */
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.2); /* Subtle blue glow */
+        border: 1px solid rgba(0, 123, 255, 0.1); /* Subtle border */
+        backdrop-filter: blur(5px);
+        width: 100%;
+        max-width: 400px; /* Max width for the form */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input {
+        display: block;
+        width: calc(100% - 20px); /* Adjust width for padding */
+        padding: 12px 10px;
+        margin: 15px 0; /* More vertical space between inputs */
+        border: 1px solid var(--neon-blue); /* Neon blue border */
+        border-radius: 8px; /* Slightly more rounded */
+        background-color: rgba(20, 31, 51, 0.9); /* Darker input background */
+        color: var(--text-light);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1em;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input::placeholder {
+        color: var(--text-muted); /* Placeholder text color */
+        opacity: 0.7;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: var(--light-neon-blue);
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Blue glow on focus */
+    }
+
+    .btn { /* General button style, reused for submit */
+        display: inline-block;
+        padding: 15px 35px;
+        font-size: 1.1em;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+    }
+
+    .btn.primary-orange { /* Style for primary action buttons like submit */
+        background: linear-gradient(45deg, var(--dark-orange), var(--neon-orange));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-orange),
+            0 0 20px rgba(255, 140, 0, 0.4),
+            0 0 30px rgba(255, 140, 0, 0.2);
+        border-color: var(--dark-orange);
+    }
+
+    .btn.primary-orange:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-orange),
+            0 0 30px rgba(255, 140, 0, 0.6),
+            0 0 45px rgba(255, 140, 0, 0.4);
+        background: linear-gradient(45deg, var(--neon-orange), var(--dark-orange));
+        border-color: var(--neon-orange);
+    }
+
+    .btn.primary-blue { /* Used for Sign Up */
+        background: linear-gradient(45deg, var(--neon-blue), var(--light-neon-blue));
+        color: white;
+        box-shadow:
+            0 0 10px var(--shadow-blue),
+            0 0 20px rgba(0, 123, 255, 0.4),
+            0 0 30px rgba(0, 123, 255, 0.2);
+        border-color: var(--neon-blue);
+    }
+
+    .btn.primary-blue:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow:
+            0 0 15px var(--shadow-blue),
+            0 0 30px rgba(0, 123, 255, 0.6),
+            0 0 45px rgba(0, 123, 255, 0.4);
+        background: linear-gradient(45deg, var(--light-neon-blue), var(--neon-blue));
+        border-color: var(--light-neon-blue);
+    }
+
+    /* Specific styles for buttons on this page */
+    button[type="submit"] {
+        margin-top: 25px; /* More space above submit button */
+        width: 100%;
+    }
+
+    #signupSuccess {
+        display: flex; /* Always flex for centering */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1; /* Take available space */
+        width: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    #signupSuccess.hidden {
+        display: none;
+    }
+
+    .message {
+        margin-top: 0; /* Remove top margin from original message style */
+        margin-bottom: 30px; /* Space between message and button */
+        font-size: 1.8em; /* Larger, more prominent */
+        color: var(--light-neon-blue); /* Neon blue for success */
+        text-shadow: 0 0 8px var(--light-neon-blue), 0 0 15px rgba(55, 168, 255, 0.5);
+        font-weight: 600;
+    }
+
+    /* Back to Home Link */
+    a.back-to-home-link {
+        display: inline-block;
+        margin-top: 40px; /* Space below content */
+        padding: 12px 28px;
+        font-size: 1em;
+        background-color: transparent;
+        color: var(--neon-blue);
+        border: 2px solid var(--neon-blue);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    a.back-to-home-link:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--light-neon-blue);
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+        transform: translateY(-2px);
+    }
+
+
+    /* Neon Glow Animations */
+    @keyframes neonGlowBlue {
+        from {
+            text-shadow:
+                0 0 10px var(--shadow-blue),
+                0 0 20px rgba(55, 168, 255, 0.5),
+                0 0 30px rgba(55, 168, 255, 0.3);
+        }
+        to {
+            text-shadow:
+                0 0 15px rgba(0, 123, 255, 0.9),
+                0 0 25px rgba(0, 123, 255, 0.7),
+                0 0 40px rgba(0, 123, 255, 0.5);
+        }
+    }
+    @keyframes neonGlowOrange {
+        from {
+            text-shadow:
+                0 0 8px rgba(255, 215, 0, 0.6),
+                0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        to {
+            text-shadow:
+                0 0 12px rgba(255, 215, 0, 0.8),
+                0 0 20px rgba(255, 215, 0, 0.6);
+        }
+    }
+    @keyframes neonGlowBlueText {
+        0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--light-neon-blue); }
+        100% { text-shadow: 0 0 8px var(--neon-blue), 0 0 15px var(--light-neon-blue), 0 0 20px rgba(55, 168, 255, 0.3); }
+    }
+    @keyframes neonGlowOrangeText {
+        0% { text-shadow: 0 0 3px var(--neon-orange), 0 0 6px var(--dark-orange); }
+        100% { text-shadow: 0 0 5px var(--neon-orange), 0 0 10px var(--dark-orange), 0 0 15px rgba(255, 165, 0, 0.3); }
+    }
+
+    /* Media Queries */
+    @media (max-width: 900px) {
+        .navbar {
+            padding: 15px 20px; /* Reduced padding on smaller screens */
+        }
+        .navbar-brand {
+            font-size: 1.5em;
+            text-align: center; /* Center brand for better look on small screens */
+            flex-grow: 1; /* Allow brand to grow and push hamburger/buttons */
+            margin-right: 0; /* Remove extra margin if flex-grow is on */
+        }
+        .navbar-brand span {
+            display: none; /* Hide tagline on very small screens to save space */
+        }
+        .navbar-buttons {
+            display: none; /* Hide buttons on small screens */
+        }
+        .hamburger {
+            margin-right: 0; /* No need for auto margin here */
+        }
+        .sidebar .sidebar-auth-buttons {
+            display: flex; /* Show auth buttons in sidebar on mobile */
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+        }
+        form {
+            padding: 25px 30px;
+        }
+        input {
+            padding: 10px;
+        }
+        .btn { /* Adjusted for general buttons on smaller screens */
+            padding: 12px 25px;
+            font-size: 1em;
+        }
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.8em;
+        }
+        form {
+            padding: 20px 25px;
+        }
+        input {
+            margin: 10px 0;
+        }
+        .message {
+            font-size: 1.2em;
+        }
+        a.back-to-home-link {
+            margin-top: 30px;
+        }
+        .sidebar .sidebar-auth-buttons .btn {
+            width: 100%; /* Stack buttons on very small screens */
+        }
+    }
+</style>
+<script>
+// Navbar and Sidebar interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const hasSubmenus = document.querySelectorAll('.has-submenu > a');
+
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+        hamburger.classList.toggle('open');
+    });
+
+    hasSubmenus.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subMenu = this.nextElementSibling;
+            if (subMenu && subMenu.classList.contains('sub-menu')) {
+                subMenu.classList.toggle('open');
+                this.parentElement.classList.toggle('active');
+            }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnHamburger = hamburger.contains(event.target);
+        const isClickOnNavbarButton = event.target.closest('.navbar-buttons'); // Check if click is on navbar buttons
+
+        if (sidebar.classList.contains('open') && !isClickInsideSidebar && !isClickOnHamburger && !isClickOnNavbarButton) {
+            sidebar.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+            document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+        }
+    });
+
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Only close sidebar if it's not a submenu toggle and not one of the auth buttons
+            if (!this.parentElement.classList.contains('has-submenu') && !this.closest('.sidebar-auth-buttons')) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('open');
+                document.querySelectorAll('.sub-menu.open').forEach(sub => sub.classList.remove('open'));
+                document.querySelectorAll('.sidebar li.active').forEach(li => li.classList.remove('active'));
+            }
+        });
+    });
+
+
+    // Sign Up page specific script
+    function signupUser(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // You would typically send this data to a server
+        const fullName = document.getElementById('fullname').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        // For demonstration, just log and show success
+        console.log("Full Name:", fullName);
+        console.log("Email:", email);
+        console.log("Password:", password);
+
+        // Hide the form and show the success message
+        document.querySelector('form').style.display = 'none';
+        document.getElementById('signupSuccess').classList.remove('hidden');
+    }
+
+    function goToGetStarted() {
+        window.location.href = "getstarted.html"; // Redirect to your "Get Started" page
+    }
+
+    // Make functions globally accessible for inline event handlers
+    window.signupUser = signupUser;
+    window.goToGetStarted = goToGetStarted;
+});
+</script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="hamburger" id="hamburger">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    <div class="navbar-brand">
+        SKILLITE
+        <span>LEARN SKILLS, BECOME ELITE</span>
+    </div>
+    <div class="navbar-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-auth-buttons">
+        <a href="signup.html" class="btn primary-blue">Sign up</a>
+        <a href="login.html" class="btn primary-orange">Log In</a>
+    </div>
+    <ul>
+        <li><a href="index.html">🏠 Home</a>
+            <ul class="sub-menu">
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Latest Posts</a></li>
+                <li><a href="#">Notifications</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">👤 Your Profile</a>
+            <ul class="sub-menu">
+                <li><a href="#">Name</a></li>
+                <li><a href="#">College</a></li>
+                <li><a href="#">Branch</a></li>
+                <li><a href="#">Interests</a></li>
+                <li><a href="#">Skill Levels</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧑‍🏫 Your Mentor</a>
+            <ul class="sub-menu">
+                <li><a href="#">Assigned Mentor Info</a></li>
+                <li><a href="#">Chat / Message</a></li>
+                <li><a href="#">Change Request</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📊 Roadmap / Progress</a>
+            <ul class="sub-menu">
+                <li><a href="#">Personalized Roadmap</a></li>
+                <li><a href="#">Completed Steps</a></li>
+                <li><a href="#">Upcoming Milestones</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎯 Your Skills</a>
+            <ul class="sub-menu">
+                <li><a href="#">Added Skills</a></li>
+                <li><a href="#">Suggested Skills</a></li>
+                <li><a href="#">Certificates</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📚 Learning Hub</a>
+            <ul class="sub-menu">
+                <li><a href="#">Tutorials</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Masterclasses</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🧰 Tools & Resources</a>
+            <ul class="sub-menu">
+                <li><a href="#">Resume Builder</a></li>
+                <li><a href="#">Interview Tips</a></li>
+                <li><a href="#">Aptitude Quizzes</a></li>
+                <li><a href="#">Coding Playground</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🗺 Explore Fields</a>
+            <ul class="sub-menu">
+                <li><a href="#">Branch-wise Fields</a></li>
+                <li><a href="#">Emerging Technologies</a></li>
+                <li><a href="#">Market Trends</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💼 Job Opportunities</a>
+            <ul class="sub-menu">
+                <li><a href="#">Internships</a></li>
+                <li><a href="#">Fresher Jobs</a></li>
+                <li><a href="#">Top Companies</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">🎓 GATE & Higher Studies</a>
+            <ul class="sub-menu">
+                <li><a href="#">Exam Guides</a></li>
+                <li><a href="#">Updates & Notifications</a></li>
+                <li><a href="#">Application Reminders</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">📅 Events & Webinars</a>
+            <ul class="sub-menu">
+                <li><a href="#">Upcoming Events</a></li>
+                <li><a href="#">Past Recordings</a></li>
+                <li><a href="#">Register</a></li>
+            </ul>
+        </li>
+        <li class="has-submenu">
+            <a href="#">💬 Feedback / Suggest Topics</a>
+            <ul class="sub-menu">
+                <li><a href="#">Feedback Form</a></li>
+                <li><a href="#">Quick DM</a></li>
+            </ul>
+        </li>
+        <li><a href="#">🔒 Log Out</a></li>
+    </ul>
+</div>
+
+<main>
+    <h1>Sign Up – SKILLITE</h1>
+    <form onsubmit="signupUser(event)">
+        <input type="text" id="fullname" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <button type="submit" class="btn primary-blue">Sign Up</button>
+    </form>
+
+    <div id="signupSuccess" class="hidden">
+        <p class="message">🥳 You've successfully signed up!</p>
+        <button onclick="goToGetStarted()" class="btn primary-blue">Get Started</button>
+    </div>
+
+    <a href="index.html" class="back-to-home-link">← Back to Home</a>
+</main>
+
+</body>
+</html>
